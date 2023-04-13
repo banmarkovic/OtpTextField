@@ -8,8 +8,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ban.otptextfield.ui.theme.GreyDark
@@ -22,12 +25,18 @@ fun OtpTextField(
     otpCount: Int = 6,
     onOtpTextChange: (String, Boolean) -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        if (otpText.length > otpCount) {
+            throw IllegalArgumentException("Otp text value must not have more than otpCount: $otpCount characters")
+        }
+    }
+
     BasicTextField(
         modifier = modifier,
-        value = otpText,
+        value = TextFieldValue(otpText, selection = TextRange(otpText.length)),
         onValueChange = {
-            if (it.length <= otpCount) {
-                onOtpTextChange.invoke(it, it.length == otpCount)
+            if (it.text.length <= otpCount) {
+                onOtpTextChange.invoke(it.text, it.text.length == otpCount)
             }
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
